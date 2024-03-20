@@ -4,6 +4,7 @@ import { FaTrash } from 'react-icons/fa';
 import Message from '../components/Message';
 import { useDispatch, useSelector } from 'react-redux';
 import  { addToCart, removeFromCart } from '../slices/cartSlice'
+import Meta from '../components/Meta';
 
 const CartScreen = () => {
 
@@ -17,10 +18,11 @@ const CartScreen = () => {
 
   const removeFromCartHandler = async removedId =>  dispatch(removeFromCart(removedId));
 
-  const checkoutHandler = () => navigate('/login?redirect=/shipping')
+  const checkoutHandler = () => navigate('/auth?redirect=/shipping')
 
   return (
     <Row>
+      <Meta  title="ByteHub Cart" />
       <Col md={8}>
         <h1 style={{ marginBottom: "20px" }}>Shopping Cart</h1>
         {cartItems.length === 0 ? (
@@ -76,7 +78,7 @@ const CartScreen = () => {
                 Subtotal ({cartItems.reduce((acc, item) => acc + item.qty, 0)})
                 items
               </h2>
-              $
+              <strong>Total Price:</strong> $
               {cartItems
                 .reduce((acc, item) => acc + item.qty * item.price, 0)
                 .toFixed(2)}
@@ -86,7 +88,7 @@ const CartScreen = () => {
                 type="button"
                 className="btn-block"
                 disabled={cartItems.length === 0}
-                onClick={() => checkoutHandler}
+                onClick={checkoutHandler}
               >
                 Proceed to Checkout
               </Button>

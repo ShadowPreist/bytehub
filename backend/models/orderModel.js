@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import Product from "./productModel.js";
 
 const orderSchema = new mongoose.Schema(
   {
@@ -29,12 +30,6 @@ const orderSchema = new mongoose.Schema(
     paymentMethod: {
       type: String,
       required: true,
-    },
-    paymentResult: {
-      id: { type: String },
-      status: { type: String },
-      update_time: { type: String },
-      email_address: { type: String },
     },
     itemsPrice: {
       type: Number,
@@ -77,6 +72,21 @@ const orderSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+orderSchema.pre("save", async function (next) {
+	try {
+		for (const orderItem of this.orderItems) {
+			const product = await Product.findById(orderItem.product);
+			if (product) {
+				product.countInStock -= orderItem.qty;
+				await product.save();
+			}
+		}
+		next();
+	} catch (error) {
+		next(error);
+	}
+});
 
 const Order = mongoose.model("Order", orderSchema);
 
